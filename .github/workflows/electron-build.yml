@@ -36,7 +36,7 @@ jobs:
 
     - name: Upload Artifacts (optional)
       if: success()
-      uses: actions/upload-artifact@v3  # Updated to the latest version v3
+      uses: actions/upload-artifact@latest  # Updated to the latest supported version
       with:
         name: electron-build
         path: dist/
