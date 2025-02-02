@@ -32,7 +32,7 @@ jobs:
         RELEASE_TAG="${{ github.event.release.tag_name }}"  # Get the release tag name
         gh release upload $RELEASE_TAG dist/*.dmg --clobber
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Upload Artifacts (optional)
       if: success()
