@@ -33,11 +33,10 @@ jobs:
         gh release upload $RELEASE_TAG dist/*.dmg --clobber
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # The GITHUB_TOKEN is automatically available and does not require manual setup
 
     - name: Upload Artifacts (optional)
       if: success()
-      uses: actions/upload-artifact@v2
+      uses: github/actions/upload-artifact@v1  # Updated action version
       with:
         name: electron-build
         path: dist/
