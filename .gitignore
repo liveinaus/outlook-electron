@@ -1,0 +1,34 @@
+# Node.js
+node_modules/
+
+# Electron build output
+/dist/
+/build/
+/out/
+
+# Optional npm package directories
+/.npm
+/.yarn
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store        # macOS
+Thumbs.db        # Windows
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# Electron specific files
+/electron-packager/
+/electron-builder/
+
+# Temporary files
+*.swp
+*.bak
+*.tmp
+
+# Environment variable files
+.env
