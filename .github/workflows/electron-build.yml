@@ -35,6 +35,7 @@ jobs:
       run: |
         RELEASE_TAG="${{ github.event.release.tag_name }}"  # Get the release tag name
         gh release upload $RELEASE_TAG dist/*.dmg --clobber
+        gh release upload $RELEASE_TAG dist/*.exe --clobber
 
     - name: Upload Artifacts (optional)
       if: success()
