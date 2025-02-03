@@ -36,12 +36,12 @@ jobs:
         RELEASE_TAG="${{ github.event.release.tag_name }}"  # Get the release tag name
         gh release upload $RELEASE_TAG dist/*.dmg --clobber
 
-    - name: Upload Artifacts (optional)
-      if: success()
-      uses: actions/upload-artifact@v4  # Updated to the latest supported version
-      with:
-        name: electron-build
-        path: dist/
+    # - name: Upload Artifacts (optional)
+    #   if: success()
+    #   uses: actions/upload-artifact@v4  # Updated to the latest supported version
+    #   with:
+    #     name: electron-build
+    #     path: dist/
 
   build-windows:
     runs-on: windows-latest  # Using Windows to build the EXE file
@@ -78,10 +78,3 @@ jobs:
             Write-Error "No .exe file found in dist/"
             exit 1
           }
-
-      - name: Upload Artifacts (optional)
-        if: success()
-        uses: actions/upload-artifact@v4  # Updated to the latest supported version
-        with:
-          name: electron-build
-          path: dist/
