@@ -7,15 +7,15 @@ on:
       - published  # Trigger when a release is published
 
 jobs:
-  build:
+  build-mac:
     runs-on: macos-latest  # Using macOS to build the DMG file
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: '18'  # Using Node.js 18.x LTS
 
@@ -35,7 +35,6 @@ jobs:
       run: |
         RELEASE_TAG="${{ github.event.release.tag_name }}"  # Get the release tag name
         gh release upload $RELEASE_TAG dist/*.dmg --clobber
-        gh release upload $RELEASE_TAG dist/*.exe --clobber
 
     - name: Upload Artifacts (optional)
       if: success()
@@ -43,3 +42,39 @@ jobs:
       with:
         name: electron-build
         path: dist/
+
+  build-windows:
+    runs-on: windows-latest  # Using Windows to build the EXE file
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'  # Using Node.js 18.x LTS
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Build Electron App
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npm run build  # Ensure 'electron-builder' is in your package.json scripts
+
+      - name: Upload EXE to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          RELEASE_TAG="${{ github.event.release.tag_name }}"  # Get the release tag name
+          gh release upload $RELEASE_TAG dist/*.exe --clobber
+
+      - name: Upload Artifacts (optional)
+        if: success()
+        uses: actions/upload-artifact@v4  # Updated to the latest supported version
+        with:
+          name: electron-build
+          path: dist/
