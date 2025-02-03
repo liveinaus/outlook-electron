@@ -1,6 +1,6 @@
 {
-	"name": "weboutlook",
-	"version": "1.0.0",
+	"name": "WebOutlook",
+	"version": "1.0.1",
 	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
@@ -10,7 +10,12 @@
 		"appId": "com.liveinaus.outlook",
 		"mac": {
 			"target": "dmg",
-			"icon": "assets/icon.icns"
+			"icon": "assets/icon.icns",
+			"identity": null
+		},
+		"win": {
+			"target": "nsis",
+			"icon": "assets/icon.ico"
 		}
 	},
 	"keywords": [],
