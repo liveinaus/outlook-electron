@@ -65,12 +65,19 @@ jobs:
         run: |
           npm run build  # Ensure 'electron-builder' is in your package.json scripts
 
-      - name: Upload EXE to Release
+      - name: Upload Windows EXE to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        shell: pwsh
         run: |
           $RELEASE_TAG = "${{ github.event.release.tag_name }}"
-          gh release upload $RELEASE_TAG dist/*.exe --clobber
+          $EXE_FILE = Get-ChildItem -Path dist/ -Filter "*.exe" | Select-Object -ExpandProperty Name
+          if ($EXE_FILE) {
+            gh release upload $RELEASE_TAG "dist/$EXE_FILE" --clobber
+          } else {
+            Write-Error "No .exe file found in dist/"
+            exit 1
+          }
 
       - name: Upload Artifacts (optional)
         if: success()
