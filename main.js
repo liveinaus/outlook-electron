@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, Notification, globalShortcut, dialog } = require("electron");
+const { app, BrowserWindow, Tray, Menu, Notification, globalShortcut, dialog, shell } = require("electron");
 const path = require("path");
 
 let mainWindow;
@@ -12,6 +12,7 @@ function createWindow() {
 		webPreferences: {
 			nodeIntegration: false,
 			contextIsolation: true,
+			enableRemoteModule: false,
 		},
 	});
 
@@ -19,8 +20,26 @@ function createWindow() {
 
 	// Prevent window from closing, hide it instead
 	mainWindow.on("close", (event) => {
-		event.preventDefault();
-		mainWindow.hide();
+		if (!app.isQuitting) {
+			event.preventDefault();
+			mainWindow.hide();
+		}
+	});
+
+	// Open external links in the default browser
+	mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+		if (!url.startsWith("https://outlook.office.com")) {
+			shell.openExternal(url);
+			return { action: "deny" };
+		}
+		return { action: "allow" };
+	});
+
+	mainWindow.webContents.on("will-navigate", (event, url) => {
+		if (!url.startsWith("https://outlook.office.com")) {
+			event.preventDefault();
+			shell.openExternal(url);
+		}
 	});
 
 	// Check for unread emails and update badge and tray tooltip
@@ -95,7 +114,13 @@ app.whenReady().then(() => {
 	tray = new Tray(path.join(__dirname, "assets", "icon.png"));
 	const contextMenu = Menu.buildFromTemplate([
 		{ label: "Show App", click: () => mainWindow.show() },
-		{ label: "Quit", click: () => app.quit() },
+		{
+			label: "Quit",
+			click: () => {
+				app.isQuitting = true;
+				app.quit();
+			},
+		},
 	]);
 	tray.setContextMenu(contextMenu);
 	tray.setToolTip("Loading...");
@@ -104,7 +129,7 @@ app.whenReady().then(() => {
 });
 
 // Quit the app when all windows are closed (except for macOS)
-app.on("window-all-closed", (event) => {
+app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
 		app.quit();
 	}
@@ -116,10 +141,10 @@ app.on("will-quit", () => {
 });
 
 // Handle app activation (macOS)
-app.on('activate', () => {
-    if (!mainWindow.isVisible()) { // Check if the window is not visible
-        mainWindow.show();
-    }
+app.on("activate", () => {
+	if (!mainWindow.isVisible()) {
+		mainWindow.show();
+	}
 });
 
 app.whenReady().then(() => {
